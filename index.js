@@ -1,12 +1,5 @@
 const express = require('express')
 const app = express()
-const cors = require('cors')
-
-
-app.use(express.json())
-app.use(cors())
-app.use(express.static('dist'))
-
 
 let notes = [
     {
@@ -40,6 +33,8 @@ const requestLogger = (request, response, next) => {
 }
 
 app.use(requestLogger)
+app.use(express.json())
+app.use(express.static('dist'))
 
 app.get('/', (request, response) => {
     response.send('<h1>Hello World!</h1>')
@@ -95,7 +90,11 @@ app.delete('/api/notes/:id', (request, response) => {
     response.status(204).end()
 })
 
+const unknownEndpoint = (request, response) => {
+    response.status(404).send({ error: 'unknown endpoint' })
+}
 
+app.use(unknownEndpoint)
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
